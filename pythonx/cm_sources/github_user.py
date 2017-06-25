@@ -3,7 +3,7 @@ from cm import register_source, Base, getLogger
 register_source(name='github-user',
                    abbreviation='user',
                    scopes=['gitcommit', 'markdown', 'magit'],
-                   word_pattern = r'[a-zA-Z_]+',
+                   word_pattern = r'\w+',
                    cm_refresh_length=-1,
                    cm_refresh_patterns=[r'github.com\/', r'@'],
                    priority=9)
