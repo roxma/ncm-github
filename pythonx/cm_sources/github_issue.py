@@ -59,5 +59,5 @@ class Source(Base):
                 matches.append(dict(word='#%s' % item['number'], menu=item['title']))
 
         logger.debug("matches: %s", matches)
-        self.complete(info, ctx, ctx['startcol'], matches, refresh=True)
+        self.complete(info, ctx, ctx['startcol'], matches)
 

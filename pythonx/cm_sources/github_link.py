@@ -1,11 +1,11 @@
 
 from cm import register_source, Base, getLogger
-register_source(name='github-repo',
-                   abbreviation='repo',
-                   scopes=['gitcommit', 'markdown', 'magit'],
-                   word_pattern = r'[\w.\-]+',
+register_source(name='github-link',
+                   abbreviation='link',
+                   scopes=['markdown'],
+                   word_pattern = r'[^)(]+',
                    cm_refresh_length=-1,
-                   cm_refresh_patterns=[r'\b(\w+)\/'],
+                   cm_refresh_patterns=[r'\[(\w+\/)?[\w.\-]+\]\('],
                    priority=9)
 
 from urllib.request import urlopen
@@ -22,21 +22,26 @@ class Source(Base):
 
     def cm_refresh(self, info, ctx):
 
+        # `.*` greedy match, push to the the end
         typed = ctx['typed']
         base = ctx['base']
         txt = typed[0 : len(typed)-len(base)]
 
-        # `.*` greedy match, push to the the end
-        match = re.search(r'.*\b(\w+)\/$', txt)
+        match = re.search(r'.*\[((\w+)\/)?([\w.\-]+)\]\($', txt)
         if not match:
-            logger.debug("match user string failed")
+            logger.debug("match pattern failed: %s", txt)
             return
 
-        user = match.group(1)
+        user = match.group(2)
+        repo = match.group(3)
+
         query = {
-                'q': ctx['base'] + ' in:name user:' + user,
+                'q': repo + ' in:name',
                 'sort': 'stars',
                 }
+
+        if user:
+            query['q'] += ' user:' + user
 
         url = 'https://api.github.com/search/repositories?' + urlencode(query)
         logger.debug("url: %s", url)
@@ -47,7 +52,7 @@ class Source(Base):
             logger.debug("rsp: %s", rsp)
             rsp = json.loads(rsp.decode())
             for item in rsp['items']:
-                matches.append(dict(word=item['name'], menu=item['full_name']))
+                matches.append(dict(word=item['html_url']))
 
         logger.debug("matches: %s", matches)
         self.complete(info, ctx, ctx['startcol'], matches, refresh=rsp['incomplete_results'])
