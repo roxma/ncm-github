@@ -4,6 +4,7 @@
 from cm import register_source, Base
 register_source(name='emoji',
                    abbreviation='emoji',
+                   scopes=['gitcommit', 'markdown', 'magit'],
                    word_pattern = r'[a-z_+\-:]+',
                    cm_refresh_length=-1,
                    cm_refresh_patterns=[':[a-z_+\-:]'],
