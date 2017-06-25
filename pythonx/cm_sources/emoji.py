@@ -10,8 +10,6 @@ register_source(name='emoji',
                    cm_refresh_patterns=[':[a-z_+\-:]'],
                    priority=8)
 
-import re
-
 class Source(Base):
 
     def __init__(self,nvim):
