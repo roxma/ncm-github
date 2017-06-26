@@ -12,5 +12,5 @@ from .emoji.codes import CODES
 
 class Source(Base):
     def cm_refresh(self,info,ctx):
-        matches = [':'+k+':' for k in CODES.keys()]
+        matches = [dict(word=':'+k+':', menu=chr(v)) for k,v in CODES]
         self.complete(info, ctx, ctx['startcol'], matches)
