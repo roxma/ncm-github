@@ -12,6 +12,7 @@ from urllib.request import urlopen
 from urllib.parse import urlencode
 import json
 import re
+from .api import create_request
 
 logger = getLogger(__name__)
 
@@ -44,10 +45,11 @@ class Source(Base):
             query['q'] += ' user:' + user
 
         url = 'https://api.github.com/search/repositories?' + urlencode(query)
+        req = create_request(url)
         logger.debug("url: %s", url)
 
         matches = []
-        with urlopen(url, timeout=30) as f:
+        with urlopen(req, timeout=30) as f:
             rsp = f.read()
             logger.debug("rsp: %s", rsp)
             rsp = json.loads(rsp.decode())
