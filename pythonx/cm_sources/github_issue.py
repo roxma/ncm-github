@@ -14,6 +14,7 @@ import json
 import subprocess
 import re
 from os.path import dirname
+from .api import create_request
 
 logger = getLogger(__name__)
 
@@ -48,10 +49,11 @@ class Source(Base):
                 }
 
         url = 'https://api.github.com/search/issues?' + urlencode(query)
+        req = create_request(url)
         logger.debug("url: %s", url)
 
         matches = []
-        with urlopen(url, timeout=30) as f:
+        with urlopen(req, timeout=30) as f:
             rsp = f.read()
             logger.debug("rsp: %s", rsp)
             rsp = json.loads(rsp.decode())
