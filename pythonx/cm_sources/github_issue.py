@@ -25,7 +25,7 @@ class Source(Base):
 
     def _get_repo_user(self, cwd):
         args = ['git', 'remote', '-v']
-        proc = subprocess.Popen(args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, cwd=cwd)
+        proc = subprocess.Popen(args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, cwd=cwd)
         result, errs = proc.communicate('', 10)
         result = result.decode('utf-8')
         match = re.search('github.com[\/:](\w+)\/([\w.\-]+)\.git', result)
