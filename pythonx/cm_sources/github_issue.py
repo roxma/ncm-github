@@ -25,20 +25,26 @@ class Source(Base):
 
     def _get_repo_user(self, cwd):
         args = ['git', 'remote', '-v']
-        proc = subprocess.Popen(args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, cwd=cwd)
-        result, errs = proc.communicate('', 10)
-        result = result.decode('utf-8')
-        match = re.search('github.com[\/:](\w+)\/([\w.\-]+)\.git', result)
-        if not match:
-            return None, None
+        try:
+            proc = subprocess.Popen(args=args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, cwd=cwd)
+            result, errs = proc.communicate('', 10)
+            result = result.decode('utf-8')
+            match = re.search('github.com[\/:](\w+)\/([\w.\-]+)\.git', result)
+            if not match:
+                return None, None
 
-        return match.group(1), match.group(2)
+            return match.group(1), match.group(2)
+        except Exception:
+            logger.exception("Failed executing _get_repo_user at cwd [%s]", cwd)
+            return None, None
 
     def cm_refresh(self,info,ctx):
 
         user, repo = self._get_repo_user(dirname(ctx['filepath']))
         if not repo:
-            repo, user = self._get_repo_user(self.nvim.eval('getcwd()'))
+            user, repo = self._get_repo_user(self.nvim.eval('getcwd()'))
+
+        logger.info("user [%s] repo [%s]", user, repo)
 
         if not repo or not user:
             return
