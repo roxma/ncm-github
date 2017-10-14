@@ -38,7 +38,7 @@ class Source(Base):
 
         user, repo = self._get_repo_user(dirname(ctx['filepath']))
         if not repo:
-            repo, user = self._get_repo_user(self.nvim.eval('$PWD'))
+            repo, user = self._get_repo_user(self.nvim.eval('getcwd()'))
 
         if not repo or not user:
             return
